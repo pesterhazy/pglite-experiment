@@ -24,8 +24,9 @@ VALUES
 let makeDb = (function () {
   let db: PGlite | undefined;
 
-  return function () {
+  return async function () {
     if (!db) db = new PGlite();
+    await setup(db);
     return db;
   };
 })();
@@ -47,13 +48,13 @@ class KVClient {
 // *****************
 
 test(async () => {
-  let kvclient = new KVClient(makeDb());
+  let kvclient = new KVClient(await makeDb());
   let result = await kvclient.get("foo");
   assert.equal(result, "bar");
 });
 
 test(async () => {
-  let kvclient = new KVClient(makeDb());
+  let kvclient = new KVClient(await makeDb());
   let result = await kvclient.get("foo2");
   assert.equal(result, "bar2");
 });
