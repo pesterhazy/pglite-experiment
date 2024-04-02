@@ -9,7 +9,7 @@ class KVClient {
     this.db = db;
   }
 
-  async get(k) {
+  async get(k: string) {
     await this.db.query(`
 drop table if exists kvpairs;
 `);
@@ -27,7 +27,7 @@ VALUES
 ('foo2','bar2')
 `);
     let result = await this.db.query("select v from kvpairs where k=$1", [k]);
-    return result.rows[0].v;
+    return (result.rows as any[])[0].v;
   }
 }
 
