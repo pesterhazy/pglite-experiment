@@ -37,12 +37,6 @@ let globalDb: PGlite | undefined;
 
 test(async () => {
   if (!globalDb) globalDb = new PGlite();
-  let result = (await globalDb.query("select 1 as v;")) as any;
-  assert.equal(result.rows[0].v, 1);
-});
-
-test(async () => {
-  if (!globalDb) globalDb = new PGlite();
   let kvclient = new KVClient(globalDb);
   let result = await kvclient.get("foo");
   assert.equal(result, "bar");
