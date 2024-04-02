@@ -1,0 +1,28 @@
+{
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "name": "pgltest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "node --env-file=.env --watch -r ts-node/register src/index.ts",
+    "beep": "watchexec --on-busy-update=do-nothing -- beep-boop npm test",
+    "test": "node --import tsx/esm --test test/**/*.test.ts"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.27",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.1.1"
+  }
+}
