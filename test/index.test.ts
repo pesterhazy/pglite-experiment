@@ -37,14 +37,11 @@ class KVClient {
   }
 
   async get(k: string) {
-    // FIXME
-    await setup(this.db);
     let result = await this.db.query("select v from kvpairs where k=$1", [k]);
     return (result.rows as any[])[0].v;
   }
 
   async set(k: string, v: string) {
-    await setup(this.db);
     await this.db.query("insert into kvpairs (k,v) VALUES ($1,$2)", [k, v]);
   }
 }
