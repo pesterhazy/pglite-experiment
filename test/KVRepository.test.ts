@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
-import { KVRepository } from "./KVRepository";
+import { KVRepository } from "../lib/KVRepository";
 
 async function setup(db: PGlite) {
   await db.exec(`
