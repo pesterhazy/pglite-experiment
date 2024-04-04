@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
+import { KVRepository } from "./KVRepository";
 
 async function setup(db: PGlite) {
   await db.exec(`
@@ -29,41 +30,24 @@ let makeDb = (function () {
   };
 })();
 
-class KVClient {
-  db: PGlite;
-
-  constructor(db: PGlite) {
-    this.db = db;
-  }
-
-  async get(k: string) {
-    let result = await this.db.query("select v from kvpairs where k=$1", [k]);
-    return (result.rows as any[])[0].v;
-  }
-
-  async set(k: string, v: string) {
-    await this.db.query("insert into kvpairs (k,v) VALUES ($1,$2)", [k, v]);
-  }
-}
-
 // *****************
 
 test(async () => {
-  let kvclient = new KVClient(await makeDb());
+  let kvclient = new KVRepository(await makeDb());
   let result = await kvclient.get("foo");
   assert.equal(result, "bar");
 });
 
 test(async () => {
-  let kvclient = new KVClient(await makeDb());
+  let kvclient = new KVRepository(await makeDb());
   let result = await kvclient.get("foo2");
   assert.equal(result, "bar2");
 });
 
 test(async () => {
   let db = await makeDb();
-  let kvclient = new KVClient(db);
-  await kvclient.set("foo3", "bar3");
+  let kvrepository = new KVRepository(db);
+  await kvrepository.set("foo3", "bar3");
   let result = (await db.query("select v from kvpairs where k='foo3'")) as any;
   assert.equal(result.rows[0].v, "bar3");
 });
