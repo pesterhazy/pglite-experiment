@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { PGlite } from "@electric-sql/pglite";
+import { PGlite, Results } from "@electric-sql/pglite";
 import { KVRepository } from "../lib/KVRepository";
 
 async function setup(db: PGlite) {
@@ -45,11 +45,7 @@ test(async () => {
 });
 
 test(async () => {
-  let db = await makeDb();
-  let kvrepository = new KVRepository(db);
-  await kvrepository.set("foo3", "bar3");
-  let result = (await db.query("select v from kvpairs where k='foo3'")) as {
-    rows: { v: string }[];
-  };
-  assert.equal(result.rows[0].v, "bar3");
+  let kvclient = new KVRepository(await makeDb());
+  let result = await kvclient.get("does_not_exist");
+  assert.equal(result, undefined);
 });
