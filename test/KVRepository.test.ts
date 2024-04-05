@@ -48,6 +48,8 @@ test(async () => {
   let db = await makeDb();
   let kvrepository = new KVRepository(db);
   await kvrepository.set("foo3", "bar3");
-  let result = (await db.query("select v from kvpairs where k='foo3'")) as any;
+  let result = (await db.query("select v from kvpairs where k='foo3'")) as {
+    rows: { v: string }[];
+  };
   assert.equal(result.rows[0].v, "bar3");
 });
