@@ -17,12 +17,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@testcontainers/postgresql": "^10.8.2",
     "@types/node": "^20.11.27",
+    "@types/pg": "^8.11.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
     "typescript": "^5.4.2"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.1.1"
+    "@electric-sql/pglite": "^0.1.1",
+    "pg": "^8.11.5"
   }
 }
