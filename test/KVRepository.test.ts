@@ -39,7 +39,7 @@ class ContainerTestDB {
 }
 
 class InProcessTestDB {
-  private pglite: PGlite;
+  private pglite: any;
 
   constructor() {
     this.pglite = new PGlite();
