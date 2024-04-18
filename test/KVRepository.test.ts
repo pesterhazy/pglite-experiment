@@ -5,7 +5,7 @@ import { KVRepository, DB } from "../lib/KVRepository";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import pg from "pg";
 
-class TempDb {
+class ContainerTestDB {
   container: any;
   client: any;
   constructor() {}
@@ -52,22 +52,22 @@ VALUES
 
 // *****************
 
-let globalTempDb: TempDb | undefined;
+let globalTestDB: ContainerTestDB | undefined;
 
 before(async () => {
-  globalTempDb = new TempDb();
-  await globalTempDb.create();
+  globalTestDB = new ContainerTestDB();
+  await globalTestDB.create();
 });
 
 after(async () => {
-  if (globalTempDb) await globalTempDb[Symbol.asyncDispose]();
+  if (globalTestDB) await globalTestDB[Symbol.asyncDispose]();
 });
 
 async function getDb() {
-  if (!globalTempDb) throw Error("Not initialized");
+  if (!globalTestDB) throw Error("Not initialized");
 
-  await setup(globalTempDb);
-  return globalTempDb;
+  await setup(globalTestDB);
+  return globalTestDB;
 }
 
 test(async () => {
