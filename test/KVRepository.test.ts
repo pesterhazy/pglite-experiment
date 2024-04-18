@@ -44,17 +44,25 @@ class InProcessTestDB {
   constructor() {
     this.pglite = new PGlite();
   }
+
+  async create() {}
+
+  async [Symbol.asyncDispose]() {}
+
+  async query(...args: any) {
+    return await this.pglite.query(...args);
+  }
 }
 
 async function setup(db: DB) {
+  await db.query(`drop table if exists kvpairs;`);
   await db.query(`
-drop table if exists kvpairs;
-
 create table kvpairs (
   k text primary key,
   v text not null
-);
+);`);
 
+  await db.query(`
 insert into kvpairs
 (k,v)
 VALUES
@@ -68,7 +76,7 @@ VALUES
 let globalTestDB: TestDB | undefined;
 
 before(async () => {
-  globalTestDB = new ContainerTestDB();
+  globalTestDB = new InProcessTestDB();
   await globalTestDB.create();
 });
 
