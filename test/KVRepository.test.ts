@@ -73,10 +73,13 @@ VALUES
 
 // *****************
 
+// const TEST_DB_TYPE = InProcessTestDB;
+const TEST_DB_TYPE = ContainerTestDB;
+
 let globalTestDB: TestDB | undefined;
 
 before(async () => {
-  globalTestDB = new InProcessTestDB();
+  globalTestDB = new TEST_DB_TYPE();
   await globalTestDB.create();
 });
 
