@@ -5,10 +5,15 @@ import { KVRepository, DB } from "../lib/KVRepository";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import pg from "pg";
 
+type TestDB = {
+  create(): Promise<void>;
+  query(...args: any): Promise<any>;
+  [Symbol.asyncDispose](): Promise<any>;
+};
+
 class ContainerTestDB {
-  container: any;
-  client: any;
-  constructor() {}
+  private container: any;
+  private client: any;
 
   async create() {
     this.container = await new PostgreSqlContainer().start();
@@ -33,6 +38,14 @@ class ContainerTestDB {
   }
 }
 
+class InProcessTestDB {
+  private pglite: PGlite;
+
+  constructor() {
+    this.pglite = new PGlite();
+  }
+}
+
 async function setup(db: DB) {
   await db.query(`
 drop table if exists kvpairs;
@@ -52,7 +65,7 @@ VALUES
 
 // *****************
 
-let globalTestDB: ContainerTestDB | undefined;
+let globalTestDB: TestDB | undefined;
 
 before(async () => {
   globalTestDB = new ContainerTestDB();
