@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, after, before } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite, Results } from "@electric-sql/pglite";
 import { KVRepository, DB } from "../lib/KVRepository";
@@ -28,6 +28,7 @@ class TempDb {
   }
 
   async query(...args: any) {
+    if (!this.client) throw "Not created yet";
     return await this.client.query(...args);
   }
 }
@@ -51,25 +52,38 @@ VALUES
 
 // *****************
 
+let globalTempDb: TempDb | undefined;
+
+before(async () => {
+  globalTempDb = new TempDb();
+  await globalTempDb.create();
+});
+
+after(async () => {
+  if (globalTempDb) await globalTempDb[Symbol.asyncDispose]();
+});
+
+async function getDb() {
+  if (!globalTempDb) throw Error("Not initialized");
+
+  await setup(globalTempDb);
+  return globalTempDb;
+}
+
 test(async () => {
-  await using tempdb = new TempDb();
-  await tempdb.create();
-
-  await setup(tempdb);
-
-  let kvclient = new KVRepository(tempdb);
+  let kvclient = new KVRepository(await getDb());
   let result = await kvclient.get("foo");
   assert.equal(result, "bar");
 });
 
-// test(async () => {
-//   let kvclient = new KVRepository(await makeDb());
-//   let result = await kvclient.get("foo2");
-//   assert.equal(result, "bar2");
-// });
+test(async () => {
+  let kvclient = new KVRepository(await getDb());
+  let result = await kvclient.get("foo2");
+  assert.equal(result, "bar2");
+});
 
-// test(async () => {
-//   let kvclient = new KVRepository(await makeDb());
-//   let result = await kvclient.get("does_not_exist");
-//   assert.equal(result, undefined);
-// });
+test(async () => {
+  let kvclient = new KVRepository(await getDb());
+  let result = await kvclient.get("does_not_exist");
+  assert.equal(result, undefined);
+});

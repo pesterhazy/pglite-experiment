@@ -1,5 +1,5 @@
 export type DB = {
-  query(q: string, vals: any[]): any;
+  query(q: string, vals?: any[]): any;
 };
 
 export class KVRepository {
