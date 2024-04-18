@@ -1,11 +1,9 @@
-import { PGlite } from "@electric-sql/pglite";
+export type DB = {
+  query(q: string, vals: any[]): any;
+};
 
 export class KVRepository {
-  db: PGlite;
-
-  constructor(db: PGlite) {
-    this.db = db;
-  }
+  constructor(private db: DB) {}
 
   async get(k: string) {
     let result = await this.db.query("select v from kvpairs where k=$1", [k]);

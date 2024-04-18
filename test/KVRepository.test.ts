@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite, Results } from "@electric-sql/pglite";
-import { KVRepository } from "../lib/KVRepository";
+import { KVRepository, DB } from "../lib/KVRepository";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import pg from "pg";
 
@@ -26,28 +26,14 @@ class TempDb {
     if (this.client) await this.client.end();
     if (this.container) await this.container.stop();
   }
+
+  async query(...args: any) {
+    return await this.client.query(...args);
+  }
 }
 
-async function setup(db: PGlite) {
-  await using tempdb = new TempDb();
-  await tempdb.create();
-
-  await tempdb.client.query(`
-drop table if exists kvpairs;
-
-create table kvpairs (
-  k text primary key,
-  v text not null
-);
-
-insert into kvpairs
-(k,v)
-VALUES
-('foo','bar'),
-('foo2','bar2');
-`);
-
-  await db.exec(`
+async function setup(db: DB) {
+  await db.query(`
 drop table if exists kvpairs;
 
 create table kvpairs (
@@ -62,21 +48,16 @@ VALUES
 ('foo2','bar2');
 `);
 }
-
-let makeDb = (function () {
-  let db: PGlite | undefined;
-
-  return async function () {
-    if (!db) db = new PGlite();
-    await setup(db);
-    return db;
-  };
-})();
 
 // *****************
 
 test(async () => {
-  let kvclient = new KVRepository(await makeDb());
+  await using tempdb = new TempDb();
+  await tempdb.create();
+
+  await setup(tempdb);
+
+  let kvclient = new KVRepository(tempdb);
   let result = await kvclient.get("foo");
   assert.equal(result, "bar");
 });
