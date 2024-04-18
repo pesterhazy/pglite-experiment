@@ -73,8 +73,8 @@ VALUES
 
 // *****************
 
-// const TEST_DB_TYPE = InProcessTestDB;
-const TEST_DB_TYPE = ContainerTestDB;
+const TEST_DB_TYPE = InProcessTestDB;
+// const TEST_DB_TYPE = ContainerTestDB;
 
 let globalTestDB: TestDB | undefined;
 
@@ -110,4 +110,12 @@ test(async () => {
   let kvclient = new KVRepository(await getDb());
   let result = await kvclient.get("does_not_exist");
   assert.equal(result, undefined);
+});
+
+test(async () => {
+  let kvclient = new KVRepository(await getDb());
+  for (let i = 0; i < 100; i++) {
+    let result = await kvclient.get("foo2");
+    assert.equal(result, "bar2");
+  }
 });
