@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "node --env-file=.env --watch -r ts-node/register src/index.ts",
-    "beep": "watchexec --on-busy-update=do-nothing -- beep-boop node --no-warnings --no-deprecation --import tsx/esm --test 'test/**/*.test.ts'",
+    "beep": "watchexec --on-busy-update=do-nothing -- beep-boop --secondary npx tsc --noEmit END_OF_SECONDARY node --no-warnings --no-deprecation --import tsx/esm --test 'test/**/*.test.ts'",
     "test": "node --import tsx/esm --test test/**/*.test.ts"
   },
   "type": "module",
